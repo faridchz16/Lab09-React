@@ -401,3 +401,93 @@ Además se corrigió en el paso 8 de este documento un fragmento de código en l
 invertidas anidadas que no se veía bien.
 
 Resultado: `npm run build` compila sin errores (27 módulos) y `npm run lint` no muestra avisos.
+
+## Paso 10 – Composición de la cartelera en App y revisión
+
+### Composición en `App.jsx`
+
+`App` es el único componente que conoce los datos: importa `movies` y `cinema` de
+`data/movies.js`, elige la película destacada (la de mayor `rating`) y reparte por props solo lo
+que necesita cada componente. El orden es `Header`, `<main>` con `Hero` y `MovieList`, y `Footer`.
+
+Enlaces del Header comprobados contra la página:
+
+| Enlace | `href` | Destino real |
+|--------|--------|--------------|
+| Cartelera | `#cartelera` | `<section id="cartelera">` de `MovieList` |
+| Horarios | `#horarios` | `<div id="horarios">`, la rejilla de tarjetas de `MovieList`, donde se ven los horarios |
+| Contacto | `#contacto` | `<footer id="contacto">` |
+
+### Recorte en componentes
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│ <Header>                  props: name, navLinks                  │
+│  Cine Aurora (h1)           [Cartelera] [Horarios] [Contacto]    │ ← <header> + <nav>
+├──────────────────────────────────────────────────────────────────┤
+│ <main>                                                           │
+│ ┌──────────────────────────────────────────────────────────────┐ │
+│ │ <Hero>   props: title, image, synopsis, classification,      │ │
+│ │                 rating   (película destacada)                │ │ ← <section>
+│ │  ┌────────┐  Película destacada                              │ │
+│ │  │ póster │  Ecos de Marte (h2)                              │ │
+│ │  │        │  [+14]  ★ 8.4/10                                 │ │
+│ │  └────────┘  Sinopsis…                                       │ │
+│ └──────────────────────────────────────────────────────────────┘ │
+│ ┌──────────────────────────────────────────────────────────────┐ │
+│ │ <MovieList>   props: movies        id="cartelera"            │ │ ← <section>
+│ │  Cartelera (h2)                                              │ │
+│ │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐   id=       │ │
+│ │  │ <MovieCard> │ │ <MovieCard> │ │ <MovieCard> │ "horarios"  │ │
+│ │  │  póster     │ │  póster     │ │  póster     │   …         │ │ ← <article>
+│ │  │  título(h3) │ │  título(h3) │ │  título(h3) │   (8 en     │ │   × 8, con
+│ │  │  ★ 7.8/10   │ │  ★ 8.4/10   │ │  ★ 7.2/10   │   total)    │ │   key={movie.id}
+│ │  │  14:30 17:00│ │  15:15 …    │ │  16:00 …    │             │ │
+│ │  └─────────────┘ └─────────────┘ └─────────────┘             │ │
+│ │  MovieCard props: title, image, rating, showtimes            │ │
+│ └──────────────────────────────────────────────────────────────┘ │
+├──────────────────────────────────────────────────────────────────┤
+│ <Footer>   props: name, contact          id="contacto"           │ ← <footer>
+│  Contacto (h2) · dirección · teléfono · correo (<address>)       │
+│  Horario · © 2026 Cine Aurora                                    │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+Flujo de datos: `movies.js` → `App` → props → componentes. Ningún componente importa los datos
+ni tiene estado; todos son de presentación.
+
+### Revisión del ui-reviewer
+
+Igual que en los pasos anteriores, el subagente no se pudo invocar por su nombre en esta sesión.
+Se usó un agente general con el rol de `.claude/agents/ui-reviewer.md` en modo solo lectura.
+
+**Resultado:** 0 errores, 5 avisos y 4 sugerencias. `npm run lint` sin errores ni avisos.
+
+Comprobado como correcto:
+- Una responsabilidad por componente.
+- Keys estables y únicas: `link.id`, `movie.id` y la hora, sin índices.
+- Ni estado ni hooks.
+- Sin `class`/`for` y sin imports sin usar.
+- Anidación del DOM válida e ids únicos.
+- `alt` descriptivo en todas las imágenes.
+- HTML semántico y jerarquía h1 → h2 → h3.
+- Las rutas de los pósters existen.
+- Reglas del proyecto cumplidas.
+- `Footer` recibe el objeto `contact` entero, pero usa sus cuatro campos, así que es correcto.
+
+Hallazgos y cómo se corrigieron:
+
+| Archivo | Tipo | Hallazgo | Corrección |
+|---------|------|----------|------------|
+| `Header.jsx` | aviso | Clases `header__nav` y `header__item` sin regla CSS | Clases eliminadas |
+| `MovieCard.jsx` | aviso | Clase `movie-card__title` sin regla CSS | Clase eliminada |
+| `Footer.jsx` | aviso | Clases `footer__item` (×3) y `footer__schedule` sin regla CSS | Clases eliminadas |
+| `Footer.css` | sugerencia | Al saltar a `#contacto`, la cabecera fija puede tapar el título | `scroll-margin-block-start` añadido a `.footer` |
+| `Hero.jsx` | sugerencia | Una clasificación desconocida se pintaba en verde, como si fuera "APT" | Si no hay color definido, se usa la insignia base con fondo neutro (`--color-surface-alt`) |
+| `Hero.jsx`, `MovieCard.jsx` | sugerencia | El lector de pantalla lee la "★" en voz alta | `★` con `aria-hidden="true"` y el texto "Valoración:" oculto visualmente con la nueva utilidad `.visually-hidden` de `global.css` |
+| `App.jsx` | sugerencia | `reduce` sin valor inicial falla si `movies` está vacío | No se cambia: los datos son estáticos y nunca están vacíos. Habrá que tenerlo en cuenta si los datos vienen de la API |
+
+Tras las correcciones se comprobó que todas las clases usadas en el JSX tienen su regla CSS.
+`npm run lint` no da errores ni avisos y `npm run build` compila correctamente.
+
+- Commit: `Composición de la cartelera en App y revisión` y push.

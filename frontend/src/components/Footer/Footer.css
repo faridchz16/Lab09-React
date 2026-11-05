@@ -1,5 +1,7 @@
 .footer {
   margin-block-start: var(--space-8);
+  /* Keeps the "Contacto" title clear of the sticky header when jumping to #contacto. */
+  scroll-margin-block-start: var(--space-8);
   background-color: var(--color-surface);
   border-block-start: thin solid var(--color-border);
   color: var(--color-text-muted);

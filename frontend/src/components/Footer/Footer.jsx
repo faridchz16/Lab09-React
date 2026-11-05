@@ -11,21 +11,21 @@ function Footer({ name, contact }) {
       <div className="container footer__inner">
         <h2 className="footer__title">Contacto</h2>
         <address className="footer__address">
-          <p className="footer__item">{contact.address}</p>
-          <p className="footer__item">
+          <p>{contact.address}</p>
+          <p>
             Teléfono:{' '}
             <a className="footer__link" href={phoneHref}>
               {contact.phone}
             </a>
           </p>
-          <p className="footer__item">
+          <p>
             Correo:{' '}
             <a className="footer__link" href={`mailto:${contact.email}`}>
               {contact.email}
             </a>
           </p>
         </address>
-        <p className="footer__schedule">Horario: {contact.schedule}</p>
+        <p>Horario: {contact.schedule}</p>
         <p className="footer__copyright">
           © {year} {name}. Todos los derechos reservados.
         </p>

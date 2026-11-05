@@ -13,8 +13,12 @@ function MovieCard({ title, image, rating, showtimes }) {
         loading="lazy"
       />
       <div className="movie-card__body">
-        <h3 className="movie-card__title">{title}</h3>
-        <p className="movie-card__rating">★ {rating}/10</p>
+        <h3>{title}</h3>
+        <p className="movie-card__rating">
+          <span aria-hidden="true">★ </span>
+          <span className="visually-hidden">Valoración: </span>
+          {rating}/10
+        </p>
         <ul className="movie-card__showtimes" aria-label={`Horarios de ${title}`}>
           {showtimes.map((time) => (
             <li key={time} className="movie-card__showtime">

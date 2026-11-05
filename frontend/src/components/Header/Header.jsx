@@ -10,10 +10,10 @@ function Header({ name, navLinks }) {
             {name}
           </a>
         </h1>
-        <nav className="header__nav" aria-label="Navegación principal">
+        <nav aria-label="Navegación principal">
           <ul className="header__list">
             {navLinks.map((link) => (
-              <li key={link.id} className="header__item">
+              <li key={link.id}>
                 <a className="header__link" href={link.href}>
                   {link.label}
                 </a>

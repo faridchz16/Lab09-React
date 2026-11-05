@@ -51,6 +51,7 @@
   border-radius: var(--radius-pill);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-bold);
+  background-color: var(--color-surface-alt);
   color: var(--color-badge-text);
 }
 

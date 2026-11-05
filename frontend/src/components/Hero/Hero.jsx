@@ -9,7 +9,11 @@ const BADGE_MODIFIERS = {
 
 // Banner that highlights the featured movie.
 function Hero({ title, image, synopsis, classification, rating }) {
-  const badgeModifier = BADGE_MODIFIERS[classification] ?? 'apt'
+  // Unknown classifications get the neutral base badge instead of a misleading color.
+  const badgeModifier = BADGE_MODIFIERS[classification]
+  const badgeClass = badgeModifier
+    ? `hero__badge hero__badge--${badgeModifier}`
+    : 'hero__badge'
 
   return (
     <section className="hero" aria-labelledby="hero-title">
@@ -27,10 +31,14 @@ function Hero({ title, image, synopsis, classification, rating }) {
             {title}
           </h2>
           <div className="hero__meta">
-            <span className={`hero__badge hero__badge--${badgeModifier}`}>
+            <span className={badgeClass}>
               {classification}
             </span>
-            <span className="hero__rating">★ {rating}/10</span>
+            <span className="hero__rating">
+              <span aria-hidden="true">★ </span>
+              <span className="visually-hidden">Valoración: </span>
+              {rating}/10
+            </span>
           </div>
           <p className="hero__synopsis">{synopsis}</p>
         </div>
