@@ -1,16 +1,54 @@
-# React + Vite
+# Cartelera con React — Laboratorio 09
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Cartelera del cine ficticio "Cine Aurora", hecha con **React 19 + Vite 8**. Forma parte del
+repositorio Lab09-React, que continúa el laboratorio 08 (backend Django en la raíz). El README
+completo está en la [raíz del repositorio](../README.md) y el registro paso a paso en
+[`docs/ENTREGABLE.md`](docs/ENTREGABLE.md).
 
-Currently, two official plugins are available:
+## Ejecución
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+cd frontend
+npm install
+npm run dev        # http://localhost:5173
+npm run build      # compilación en dist/ (ignorada por Git)
+npm run lint
+```
 
-## React Compiler
+## Estructura
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```
+src/
+├── main.jsx          # monta <App /> e importa styles/global.css
+├── App.jsx           # compone la página y reparte los datos por props
+├── data/movies.js    # `movies` (8 películas) y `cinema` (nombre, navegación, contacto)
+├── styles/           # variables.css (tokens) + global.css (estilos base)
+└── components/       # Componente/Componente.jsx + Componente.css
+    ├── Header/       # name, navLinks
+    ├── Hero/         # title, image, synopsis, classification, rating
+    ├── MovieList/    # movies → <MovieCard key={movie.id} />
+    ├── MovieCard/    # title, image, rating, showtimes
+    └── Footer/       # name, contact
+public/posters/       # pósters SVG
+```
 
-## Expanding the ESLint configuration
+Todos los componentes son funcionales y de presentación: reciben solo las props que usan y no
+tienen estado ni hooks. Usan HTML semántico (`header`, `nav`, `main`, `section`, `article`,
+`footer`) y todas las imágenes tienen `alt`.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Dependencias
+
+`react` y `react-dom` 19.3.1, `vite` 8.3.6 y `@vitejs/plugin-react` 6.2.1. Para el lint, `eslint`
+10 con los plugins de React. No se añadió nada a la plantilla de Vite.
+
+## Subagentes de Claude Code
+
+Están en `../.claude/agents/` y son el equivalente a los de opencode del lab 08:
+- **`react-dev`**: escribe los componentes y estilos (como `django-dev` hacía con el backend).
+- **`ui-reviewer`**: revisor de solo lectura (responsabilidad única, props mínimas, avisos de
+  React, `alt`).
+
+## Commits
+
+18 commits del laboratorio 09, desde `f1a9673` (creación del proyecto con Vite) hasta `3a05a81`
+(registro de los errores de JSX). La lista completa está en el README de la raíz.

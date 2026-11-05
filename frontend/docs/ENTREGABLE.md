@@ -560,3 +560,48 @@ filtra o cambia, puede reutilizar mal los nodos o su estado. La página se ve bi
 un error. Es un **aviso de listas** que React muestra en desarrollo. La solución es una `key`
 estable y única tomada de los datos (`movie.id`); el índice del `map` no sirve si la lista puede
 cambiar de orden.
+
+## Paso 12 – Documentación final
+
+- `README.md` de la raíz: se conservó íntegra la parte del laboratorio 08 y se añadió al final la
+  sección "Laboratorio 09: Cartelera con React". Incluye descripción, ejecución, estructura de
+  componentes, dependencias, subagentes y su relación con los de opencode, y la lista de commits.
+- `frontend/README.md`: sustituye el README genérico de la plantilla de Vite por un resumen de lo
+  anterior.
+
+## Uso de IA
+
+Todo el laboratorio se hizo con **Claude Code**. Los pasos 3 a 10 se delegaron a los
+subagentes definidos en `.claude/agents/`.
+
+| Qué se le pidió | Qué hizo | Resultado |
+|-----------------|----------|-----------|
+| Verificar `.gitignore`, commit y push del proyecto Vite | Comprobó que `node_modules` y `dist` estaban excluidos y que no se preparaba ningún archivo de `node_modules` | Aceptado |
+| Crear `CLAUDE.md` y los subagentes `react-dev` y `ui-reviewer` | Los redactó a partir de los agentes de `.opencode/agent/`; `ui-reviewer` quedó limitado a `Read`, `Glob` y `Grep` | Aceptado |
+| Limpiar el andamiaje de la plantilla | Borró logos, `App.css` y el contador, y además `index.css` y el favicon (decisiones propias, informadas al usuario) | Aceptado |
+| Subir el lab 09 al repo de Lab08-Django | Lo hizo, pero mezclaba dos laboratorios en un repo | **Rechazado por el usuario**: se trasladó a Lab09-React y se restauró Lab08-Django a `dbd0cd2` con `--force-with-lease` |
+| Usar el subagente `react-dev` / `ui-reviewer` por su nombre | Falló: los subagentes creados a mitad de sesión no se cargan hasta reiniciar | Alternativa aceptada: un agente general con el rol de cada archivo |
+| Carpetas, arquitectura de CSS, datos y pósters (pasos 3 y 4) | Creó `styles/` con tokens, `movies.js` con 8 películas inventadas y 8 pósters SVG | Aceptado |
+| Los cinco componentes (pasos 5 a 9) | Un commit por componente con build y lint. Por su cuenta movió el `<h1>` al Header y llevó `#horarios` a la rejilla | Aceptado |
+| Revisión con `ui-reviewer` (paso 10) | 0 errores, 5 avisos y 4 sugerencias | 5 avisos y 3 sugerencias **aplicados**. La sugerencia de proteger el `reduce` ante una lista vacía se **rechazó** porque los datos son estáticos |
+| Numeración del entregable | El agente dejó "Paso 3/4/5" repetidos | Corregido: las tareas iniciales pasaron a "Configuración 1–5" |
+| Provocar los tres errores de JSX sin commit (paso 11) | Los introdujo y revirtió de uno en uno. El mensaje del error 2 no estaba disponible, así que lo reprodujo con `npm run build` en lugar de inventarlo | Aceptado |
+
+## Conclusiones
+
+- **Separar datos y presentación** simplifica los componentes: `App` es el único que conoce
+  `movies.js`, y el resto son funciones puras de sus props. Si los datos llegan más adelante
+  desde la API Django del lab 08, solo cambian `data/` y `App`.
+- **Una carpeta por componente** con su `.jsx` y su `.css`, más los tokens de `variables.css`,
+  permite cambiar el aspecto de toda la app desde un solo archivo sin que los estilos se pisen.
+- **Props mínimas**: pasar campos sueltos (`title`, `image`…) en vez del objeto completo deja
+  claro qué necesita cada componente y facilita la revisión.
+- **Los tres errores típicos de JSX** muestran tres niveles de gravedad:
+  - `class` en vez de `className` compila, pero React avisa en la consola.
+  - Dos nodos raíz sin fragmento no compilan.
+  - Un `map` sin `key` funciona, pero arriesga la reconciliación de la lista.
+- **Subagentes con roles separados** (uno escribe, otro solo revisa) reproducen el esquema del
+  lab 08 con opencode. El revisor de solo lectura encontró problemas reales que el lint no
+  detecta: clases CSS sin regla, accesibilidad de la "★" y el `scroll-margin` del footer.
+- **Supervisión humana**: la IA aceleró el trabajo, pero el usuario revisó cada paso. Corrigió la
+  decisión de usar el mismo repositorio, y las propuestas del revisor se valoraron una a una.

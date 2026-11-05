@@ -101,3 +101,124 @@ A continuación se muestran las principales evidencias del funcionamiento, verif
 
 6. **Pasarela de Seguridad del Agente de IA:**
    ![Pasarela de IA](Evidencias_lab08/06_pasarela_seguridad_agente_ia.png)
+
+---
+
+# Laboratorio 09: Cartelera con React
+
+## 🎬 Descripción
+
+Este repositorio (**Lab09-React**) continúa el laboratorio 08: conserva todo el backend Django
+anterior y añade en `frontend/` una **cartelera de cine** hecha con **React + Vite**. La página
+muestra el cine ficticio "Cine Aurora" con:
+- una cabecera con navegación;
+- un banner con la película mejor valorada;
+- una rejilla con las 8 películas en cartelera (póster, valoración y horarios);
+- un pie de página con los datos de contacto.
+
+Los datos son estáticos (`src/data/movies.js`) y todos los componentes son funcionales y de
+presentación: reciben la información por props, sin estado ni hooks.
+
+## ▶️ Cómo ejecutarlo
+
+Requisitos: Node.js y npm.
+
+```bash
+cd frontend
+npm install
+npm run dev        # servidor de desarrollo en http://localhost:5173
+```
+
+Otros comandos (siempre dentro de `frontend/`):
+
+```bash
+npm run build      # compilación de producción en frontend/dist/ (excluida de Git)
+npm run preview    # sirve la compilación de producción
+npm run lint       # ESLint
+```
+
+## 🧩 Estructura de componentes
+
+```
+frontend/
+├── public/posters/          # 8 pósters SVG, servidos tal cual por Vite (/posters/...)
+├── docs/ENTREGABLE.md       # registro detallado de cada paso
+└── src/
+    ├── main.jsx             # punto de entrada: importa global.css y monta <App />
+    ├── App.jsx              # compone la página y reparte los datos por props
+    ├── data/movies.js       # exporta `movies` (8 películas) y `cinema` (nombre, navegación, contacto)
+    ├── styles/
+    │   ├── variables.css    # tokens: colores, tipografía, espaciado, radios, sombras
+    │   └── global.css       # estilos base, .container y .visually-hidden
+    └── components/          # una carpeta por componente: Componente.jsx + Componente.css
+        ├── Header/          # <header> con el nombre del cine (h1) y <nav>
+        ├── Hero/            # <section> con la película destacada
+        ├── MovieList/       # <section id="cartelera"> que recorre las películas con map
+        ├── MovieCard/       # <article> de una película
+        └── Footer/          # <footer id="contacto"> con la dirección y el contacto
+```
+
+| Componente | Props | Qué muestra |
+|------------|-------|-------------|
+| `Header` | `name`, `navLinks` | Nombre del cine y enlaces a `#cartelera`, `#horarios` y `#contacto` |
+| `Hero` | `title`, `image`, `synopsis`, `classification`, `rating` | Banner de la película mejor valorada, con insignia de clasificación |
+| `MovieList` | `movies` | Sección "Cartelera" con una rejilla responsiva; cada `MovieCard` lleva `key={movie.id}` |
+| `MovieCard` | `title`, `image`, `rating`, `showtimes` | Póster con `alt`, título, valoración `★ x/10` y lista de horarios |
+| `Footer` | `name`, `contact` | Dirección, teléfono (`tel:`), correo (`mailto:`), horario y copyright |
+
+`App` es el único componente que importa los datos. Cada componente recibe solo los campos que
+usa; por ejemplo, `MovieCard` recibe cuatro campos sueltos y no el objeto `movie` entero.
+
+## 📚 Dependencias
+
+| Paquete | Versión | Uso |
+|---------|---------|-----|
+| `react`, `react-dom` | 19.3.1 | Biblioteca de interfaz y renderizado en el DOM |
+| `vite` | 8.3.6 | Servidor de desarrollo y empaquetador |
+| `@vitejs/plugin-react` | 6.2.1 | Soporte de JSX y recarga en caliente para React |
+| `eslint`, `@eslint/js`, `globals` | 10.14.0 / 10.0.1 / 17.14.0 | Análisis estático |
+| `eslint-plugin-react-hooks`, `eslint-plugin-react-refresh` | 7.1.1 / 0.5.7 | Reglas de React para ESLint |
+
+No se añadieron dependencias a la plantilla de Vite.
+
+## 🤖 Subagentes de Claude Code
+
+Se definieron en `.claude/agents/` dos subagentes, equivalentes a los de `.opencode/agent/` del
+laboratorio 08. Las reglas del proyecto están en `CLAUDE.md`.
+
+| Lab 09 (Claude Code) | Función | Equivalente en el lab 08 (opencode) |
+|----------------------|---------|--------------------------------------|
+| `react-dev` | Escribe componentes y estilos en `frontend/`; puede editar y ejecutar comandos | `django-dev`, que construía el backend (modelos, serializadores, vistas) con permisos de edición |
+| `ui-reviewer` | Solo lectura: revisa responsabilidad única, props mínimas, avisos de React y `alt` | `cli-gateway`, también especializado y con un ámbito acotado. En el lab 08 no había un agente revisor separado; en el lab 09 se separan quien escribe y quien revisa |
+
+Las dos herramientas siguen el mismo formato: un archivo Markdown por agente con un *front matter*
+(descripción, herramientas o permisos) y un *prompt* de sistema. La diferencia está en los
+permisos. opencode los declara con `permission:`, mientras que Claude Code limita las
+herramientas con `tools:`. Por eso `ui-reviewer` solo tiene `Read`, `Glob` y `Grep`.
+
+Nota: los subagentes se crearon a mitad de la sesión y Claude Code los carga al iniciar. Por eso
+se ejecutaron mediante un agente general que adoptó el rol definido en cada archivo.
+
+## 📦 Commits del laboratorio 09
+
+Historial posterior a `dbd0cd2` (último commit del laboratorio 08), del más reciente al más antiguo:
+- `3a05a81` - Registro de los tres errores típicos de JSX
+- `5352a4b` - Composición de la cartelera en App y revisión
+- `11a70b3` - Corrección de la numeración repetida de pasos en el entregable
+- `b643b61` - Componente MovieList: rejilla de la cartelera con una tarjeta por película
+- `f3c828b` - Componente MovieCard: tarjeta de película con póster, valoración y horarios
+- `cc581d5` - Componente Hero: banner de la película mejor valorada
+- `cf923a4` - Componente Footer: pie de página con los datos de contacto del cine
+- `be1505e` - Componente Header: encabezado con el nombre del cine y la navegación
+- `d6946bd` - Documentación de la estructura de carpetas y los datos en el entregable
+- `13da241` - Creación de los datos de películas y del cine con pósters SVG
+- `5e669c3` - Organización de src/ en carpetas y arquitectura de CSS
+- `95de66d` - Registro del traslado a Lab09-React en el entregable
+- `1bbda23` - Actualización de CLAUDE.md: el repositorio pasa a ser Lab09-React
+- `f7d9c0f` - Documentación del entregable del laboratorio 09
+- `74e6105` - Limpieza del andamiaje de la plantilla
+- `0cb7788` - Creación de los subagentes react-dev y ui-reviewer en .claude/agents/
+- `c7c3b61` - Creación de CLAUDE.md con la descripción del repositorio y las reglas del frontend
+- `f1a9673` - Creación del proyecto React con Vite en frontend/
+
+El detalle de cada paso está en [`frontend/docs/ENTREGABLE.md`](frontend/docs/ENTREGABLE.md).
