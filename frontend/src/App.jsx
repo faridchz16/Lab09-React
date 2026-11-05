@@ -1,7 +1,7 @@
 // Root component of the movie billboard app.
 function App() {
   return (
-    <main>
+    <main className="container">
       <h1>Cartelera de cine</h1>
     </main>
   )

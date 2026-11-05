@@ -1,0 +1,61 @@
+/* Design tokens for the movie billboard (dark cinema theme). */
+:root {
+  /* Colors */
+  --color-bg: #0d0d12;
+  --color-surface: #17171f;
+  --color-surface-alt: #20202b;
+  --color-text: #f2f2f5;
+  --color-text-muted: #a3a3b2;
+  --color-primary: #e50914;
+  --color-primary-hover: #ff2a35;
+  --color-border: #2c2c3a;
+  --color-rating: #f5c518;
+
+  /* Classification badge colors */
+  --color-badge-apt: #2e9e5b;
+  --color-badge-14: #e08a1e;
+  --color-badge-18: #c62828;
+  --color-badge-text: #ffffff;
+
+  /* Typography */
+  --font-body: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-heading: 'Bebas Neue', 'Oswald', 'Arial Narrow', Impact, sans-serif;
+
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.75rem;
+  --font-size-2xl: 2.5rem;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.2;
+  --line-height-base: 1.6;
+
+  /* Spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+
+  /* Layout */
+  --container-max-width: 1200px;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
+}
