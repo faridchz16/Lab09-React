@@ -491,3 +491,72 @@ Tras las correcciones se comprobó que todas las clases usadas en el JSX tienen 
 `npm run lint` no da errores ni avisos y `npm run build` compila correctamente.
 
 - Commit: `Composición de la cartelera en App y revisión` y push.
+
+## Paso 11 – Tres errores típicos de JSX
+
+Se provocó cada error a propósito, de uno en uno y sin hacer commit. Se hizo la captura y se
+revirtió con `git checkout -- <archivo>` antes de pasar al siguiente. Al terminar, `git status` no
+mostraba cambios, `npm run lint` no daba errores ni avisos y `npm run build` compilaba correctamente.
+
+| # | Archivo | Tipo | Dónde aparece |
+|---|---------|------|---------------|
+| 1 | `MovieCard.jsx` | Aviso en tiempo de ejecución | Consola del navegador (la app sigue funcionando) |
+| 2 | `Footer.jsx` | Error de compilación | Terminal de Vite y overlay en el navegador (la app no compila) |
+| 3 | `MovieList.jsx` | Aviso de listas | Consola del navegador (la app sigue funcionando) |
+
+### Error 1 – `class` en lugar de `className`
+
+**Cambio:** en `MovieCard.jsx:6`, `<article className="movie-card">` pasó a `<article class="movie-card">`.
+
+**Mensaje (consola del navegador):**
+
+```
+Invalid DOM property `class`. Did you mean `className`?
+```
+
+**Por qué:** JSX no es HTML; se transforma en llamadas de JavaScript donde los atributos son
+propiedades de un objeto. React usa los nombres de las propiedades del DOM, y en el DOM esa
+propiedad se llama `className`, porque `class` es una palabra reservada de JavaScript. El código
+es JavaScript válido y por eso compila. En modo desarrollo, React detecta el nombre incorrecto y
+avisa en la consola. Es solo un **aviso**: React 19 todavía aplica el atributo, pero el código
+no es correcto y el aviso indica cómo arreglarlo.
+
+### Error 2 – Dos nodos raíz sin fragmento
+
+**Cambio:** en `Footer.jsx` el párrafo del copyright se sacó fuera de `</footer>`, de modo que el
+`return` devolvía dos elementos hermanos (`<footer>` y `<p>`) sin nada que los envolviera.
+
+**Mensaje (`npm run build`, igual que en el overlay del servidor de desarrollo):**
+
+```
+[builtin:vite-transform] Adjacent JSX elements must be wrapped in an enclosing tag.
+    ╭─[ src/components/Footer/Footer.jsx:31:5 ]
+ 31 │     <p className="footer__copyright">
+    │ Help: Did you want a JSX fragment `<>...</>`?
+```
+
+**Por qué:** cada elemento JSX se convierte en una sola expresión (una llamada a `jsx(...)`), y
+un `return` solo puede devolver un valor. Dos elementos seguidos son dos expresiones sin operador
+entre ellas, así que el código **no es sintácticamente válido** y el transformador de Vite falla
+antes de ejecutar nada: es un **error de compilación** y la aplicación no llega a cargarse.
+Solución: envolverlos en un fragmento `<>...</>`, que agrupa sin añadir nodos al DOM, o en un
+elemento contenedor.
+
+### Error 3 – `map` sin `key`
+
+**Cambio:** en `MovieList.jsx` se quitó `key={movie.id}` del `<MovieCard>` generado dentro de
+`movies.map(...)`.
+
+**Mensaje (consola del navegador, `MovieList.jsx:15`):**
+
+```
+Each child in a list should have a unique "key" prop. Check the render method of `MovieList`.
+```
+
+**Por qué:** al volver a renderizar una lista, React compara los hijos nuevos con los anteriores
+para decidir qué crear, mover o eliminar (reconciliación), y la `key` es lo que identifica a cada
+elemento entre renders. Sin ella, React solo puede usar la posición, y si la lista se reordena,
+filtra o cambia, puede reutilizar mal los nodos o su estado. La página se ve bien, así que no es
+un error. Es un **aviso de listas** que React muestra en desarrollo. La solución es una `key`
+estable y única tomada de los datos (`movie.id`); el índice del `map` no sirve si la lista puede
+cambiar de orden.
