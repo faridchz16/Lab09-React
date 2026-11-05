@@ -4,14 +4,14 @@ Este repositorio es acumulativo: en la raíz está la API Django del laboratorio
 el proyecto React del laboratorio 09. En ningún paso se modificó el backend Django (`config/`,
 `quiz/`, `agent/`, `quizctl.py`, etc.) ni la carpeta `.opencode/`.
 
-## Paso 1 – Creación del proyecto React con Vite
+## Configuración 1 – Creación del proyecto React con Vite
 
 - Se comprobó que `frontend/.gitignore` (generado por la plantilla de Vite) incluye la entrada
   `node_modules`, además de `dist`, `dist-ssr` y `*.local`. Al preparar el commit se verificó que
   ningún archivo de `node_modules/` quedaba en el área de preparación.
 - Commit: `Creación del proyecto React con Vite en frontend/` (`f1a9673`) y push a `origin/main`.
 
-## Paso 2 – CLAUDE.md
+## Configuración 2 – CLAUDE.md
 
 - Se creó `CLAUDE.md` en la raíz con:
   - La descripción del repositorio (backend Django del lab 08 y frontend React del lab 09).
@@ -22,7 +22,7 @@ el proyecto React del laboratorio 09. En ningún paso se modificó el backend Dj
     comentarios en inglés; explicaciones en español; un commit por tarea con mensaje en español.
 - Commit: `Creación de CLAUDE.md con la descripción del repositorio y las reglas del frontend` (`c7c3b61`).
 
-## Paso 3 – Subagentes de Claude Code
+## Configuración 3 – Subagentes de Claude Code
 
 Se crearon dos subagentes en `.claude/agents/`, equivalentes a los de `.opencode/agent/` del lab 08
 (`django-dev` y `cli-gateway`), pero orientados al frontend:
@@ -34,7 +34,7 @@ Se crearon dos subagentes en `.claude/agents/`, equivalentes a los de `.opencode
 
 - Commit: `Creación de los subagentes react-dev y ui-reviewer en .claude/agents/` (`0cb7788`).
 
-## Paso 4 – Limpieza del andamiaje de la plantilla
+## Configuración 4 (paso 2 de la guía) – Limpieza del andamiaje de la plantilla
 
 Se eliminó todo lo que traía la plantilla de Vite y que no forma parte de la cartelera:
 
@@ -54,7 +54,7 @@ Verificación: `npm run lint` sin errores ni avisos y `npm run build` compila co
 
 - Commit: `Limpieza del andamiaje de la plantilla` (`74e6105`) y push a `origin/main`.
 
-## Paso 5 – Documentación del entregable
+## Configuración 5 – Documentación del entregable
 
 - Se creó este archivo, `frontend/docs/ENTREGABLE.md`, con el registro de cada paso.
 - Commit: `Documentación del entregable del laboratorio 09` (`f7d9c0f`).
