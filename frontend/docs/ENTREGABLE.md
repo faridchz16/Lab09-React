@@ -160,3 +160,35 @@ Los datos todavía no se usan en ningún componente; eso corresponde a los pasos
 `npm run lint` y `npm run build` pasan sin avisos.
 
 - Commit: `Creación de los datos de películas y del cine con pósters SVG` (`13da241`) y push.
+
+## Paso 5 – Componente Header
+
+Archivos: `src/components/Header/Header.jsx` y `Header.css`. Se borró
+`src/components/.gitkeep`, que ya no hace falta porque la carpeta tiene contenido.
+
+Props:
+
+| Prop | Tipo | Descripción |
+|------|------|-------------|
+| `name` | `string` | Nombre del cine que se muestra como marca. |
+| `navLinks` | `Array<{ id: string, label: string, href: string }>` | Enlaces del menú de navegación. |
+
+Qué renderiza:
+
+- Un `<header className="header">` fijo arriba (`position: sticky`) con el contenedor `.container`.
+- El nombre del cine como enlace a la parte superior de la página (`.header__brand`).
+- Un `<nav aria-label="Navegación principal">` con una `<ul>` de `<li>`/`<a>`, uno por enlace.
+  Cada `<li>` usa `key={link.id}`, un identificador estable y único.
+- Los estilos solo usan variables de `variables.css` (el borde inferior usa la palabra clave
+  `thin` en lugar de un tamaño en píxeles).
+
+Uso en `App`: `App` importa `cinema` desde `./data/movies.js` y pasa solo lo que el componente
+necesita:
+
+```jsx
+<Header name={cinema.name} navLinks={cinema.navLinks} />
+```
+
+El `Header` queda fuera de `<main>`, como corresponde a un encabezado de página.
+
+Resultado: `npm run build` compila sin errores (19 módulos) y `npm run lint` no muestra avisos.
