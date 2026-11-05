@@ -229,15 +229,19 @@ Resultado: `npm run build` compila sin errores y `npm run lint` no muestra aviso
 
 Archivos: `src/components/Hero/Hero.jsx` y `Hero.css`.
 
-Props (campos sueltos, no el objeto película completo, para que el componente reciba solo lo que
-usa):
+Props: recibe **la película por props**, como indica la guía (ver "Cambio de props según la guía"
+al final). Dentro, desestructura solo los campos que usa:
 
 | Prop | Tipo | Descripción |
 |------|------|-------------|
-| `title` | `string` | Título de la película destacada. |
+| `movie` | `{ id, title, image, synopsis, classification, rating, showtimes }` | Película destacada. |
+
+| Campo usado | Tipo | Para qué |
+|-------------|------|----------|
+| `title` | `string` | Título (`<h2>`) y `alt` del póster. |
 | `image` | `string` | Ruta del póster (por ejemplo, `/posters/ecos-de-marte.svg`). |
 | `synopsis` | `string` | Sinopsis breve. |
-| `classification` | `string` | Clasificación por edad: `APT`, `+14` o `+18`. |
+| `classification` | `string` | Insignia por edad: `APT`, `+14` o `+18`. |
 | `rating` | `number` | Valoración de 0 a 10 con un decimal. |
 
 Qué renderiza:
@@ -260,13 +264,7 @@ const featured = movies.reduce((best, movie) =>
   movie.rating > best.rating ? movie : best,
 )
 
-<Hero
-  title={featured.title}
-  image={featured.image}
-  synopsis={featured.synopsis}
-  classification={featured.classification}
-  rating={featured.rating}
-/>
+<Hero movie={featured} />
 ```
 
 Con los datos actuales es "Ecos de Marte" (8.4).
@@ -284,18 +282,26 @@ Resultado: `npm run build` compila sin errores y `npm run lint` no muestra aviso
 
 Archivos: `src/components/MovieCard/MovieCard.jsx` y `MovieCard.css`.
 
-Props (los cuatro campos pedidos, por separado):
+Props: recibe **la película por props**, como indica la guía. Dentro, desestructura solo los
+cuatro campos que muestra (`synopsis`, `classification` e `id` no se usan):
 
 | Prop | Tipo | Descripción |
 |------|------|-------------|
-| `title` | `string` | Título de la película. |
+| `movie` | `{ id, title, image, synopsis, classification, rating, showtimes }` | Película de la tarjeta. |
+
+| Campo usado | Tipo | Para qué |
+|-------------|------|----------|
+| `title` | `string` | Título (`<h3>`), `alt` del póster y `aria-label` de los horarios. |
 | `image` | `string` | Ruta del póster. |
 | `rating` | `number` | Valoración de 0 a 10. |
 | `showtimes` | `string[]` | Horarios de función, en formato `HH:MM`. |
 
-Pasar los campos individuales en lugar del objeto `movie` completo mantiene las props al mínimo:
-la tarjeta no recibe `synopsis`, `classification` ni `id`, que no usa, y su firma deja claro qué
-datos necesita. Si el objeto de datos crece, la tarjeta no se entera.
+```jsx
+function MovieCard({ movie }) {
+  const { title, image, rating, showtimes } = movie
+  // ...
+}
+```
 
 Qué renderiza:
 
@@ -313,12 +319,7 @@ Es provisional: el siguiente paso la reemplaza por `MovieList`.
 
 ```jsx
 <div className="container" style={{ maxWidth: 'calc(var(--space-8) * 5)' }}>
-  <MovieCard
-    title={movies[0].title}
-    image={movies[0].image}
-    rating={movies[0].rating}
-    showtimes={movies[0].showtimes}
-  />
+  <MovieCard movie={movies[0]} />
 </div>
 ```
 
@@ -344,17 +345,11 @@ Qué renderiza:
 - Un `<h2>Cartelera</h2>` y una rejilla CSS responsiva (`.movie-list__grid`) con
   `repeat(auto-fill, minmax(min(100%, calc(var(--space-8) * 3.5)), 1fr))`: tantas columnas como
   quepan, de un mínimo de 14rem, y una sola columna en pantallas estrechas sin desbordar.
-- Un `MovieCard` por película. `MovieList` recorre el arreglo y pasa a cada tarjeta solo sus cuatro
-  campos, con `key={movie.id}`, el identificador estable de los datos:
+- Un `MovieCard` por película. `MovieList` recorre el arreglo y pasa a cada tarjeta su película,
+  con `key={movie.id}`, el identificador estable de los datos:
 
   ```jsx
-  <MovieCard
-    key={movie.id}
-    title={movie.title}
-    image={movie.image}
-    rating={movie.rating}
-    showtimes={movie.showtimes}
-  />
+  <MovieCard key={movie.id} movie={movie} />
   ```
 
 - `scroll-margin-block-start` en la sección y en la rejilla para que, al saltar desde el menú, el
@@ -381,13 +376,7 @@ porque cada tarjeta muestra los de su película.
 <>
   <Header name={cinema.name} navLinks={cinema.navLinks} />
   <main>
-    <Hero
-      title={featured.title}
-      image={featured.image}
-      synopsis={featured.synopsis}
-      classification={featured.classification}
-      rating={featured.rating}
-    />
+    <Hero movie={featured} />
     <MovieList movies={movies} />
   </main>
   <Footer name={cinema.name} contact={cinema.contact} />
@@ -427,8 +416,8 @@ Enlaces del Header comprobados contra la página:
 ├──────────────────────────────────────────────────────────────────┤
 │ <main>                                                           │
 │ ┌──────────────────────────────────────────────────────────────┐ │
-│ │ <Hero>   props: title, image, synopsis, classification,      │ │
-│ │                 rating   (película destacada)                │ │ ← <section>
+│ │ <Hero>   props: movie  (película destacada; usa title,       │ │
+│ │          image, synopsis, classification, rating)            │ │ ← <section>
 │ │  ┌────────┐  Película destacada                              │ │
 │ │  │ póster │  Ecos de Marte (h2)                              │ │
 │ │  │        │  [+14]  ★ 8.4/10                                 │ │
@@ -444,7 +433,7 @@ Enlaces del Header comprobados contra la página:
 │ │  │  ★ 7.8/10   │ │  ★ 8.4/10   │ │  ★ 7.2/10   │   total)    │ │   key={movie.id}
 │ │  │  14:30 17:00│ │  15:15 …    │ │  16:00 …    │             │ │
 │ │  └─────────────┘ └─────────────┘ └─────────────┘             │ │
-│ │  MovieCard props: title, image, rating, showtimes            │ │
+│ │  MovieCard props: movie (usa title, image, rating, showtimes)│ │
 │ └──────────────────────────────────────────────────────────────┘ │
 ├──────────────────────────────────────────────────────────────────┤
 │ <Footer>   props: name, contact          id="contacto"           │ ← <footer>
@@ -615,8 +604,10 @@ subagentes definidos en `.claude/agents/`.
   desde la API Django del lab 08, solo cambian `data/` y `App`.
 - **Una carpeta por componente** con su `.jsx` y su `.css`, más los tokens de `variables.css`,
   permite cambiar el aspecto de toda la app desde un solo archivo sin que los estilos se pisen.
-- **Props mínimas**: pasar campos sueltos (`title`, `image`…) en vez del objeto completo deja
-  claro qué necesita cada componente y facilita la revisión.
+- **Props y desestructuración**: siguiendo la guía, `Hero` y `MovieCard` reciben la película
+  completa (`movie`) y desestructuran solo los campos que usan. Así la llamada queda simple
+  (`<MovieCard movie={movie} />`) y la primera línea del componente sigue mostrando qué datos
+  necesita.
 - **Los tres errores típicos de JSX** muestran tres niveles de gravedad:
   - `class` en vez de `className` compila, pero React avisa en la consola.
   - Dos nodos raíz sin fragmento no compilan.
@@ -626,3 +617,35 @@ subagentes definidos en `.claude/agents/`.
   detecta: clases CSS sin regla, accesibilidad de la "★" y el `scroll-margin` del footer.
 - **Supervisión humana**: la IA aceleró el trabajo, pero el usuario revisó cada paso. Corrigió la
   decisión de usar el mismo repositorio, y las propuestas del revisor se valoraron una a una.
+
+## Cambio de props según la guía
+
+Los pasos 7 y 8 de la guía indican que `Hero` y `MovieCard` reciben "la película por props". En la
+primera versión recibían los campos sueltos (`title`, `image`, `rating`…), por la regla de
+`CLAUDE.md` de pasar solo lo necesario. Se ajustaron para seguir la guía:
+
+| Componente | Antes | Ahora |
+|------------|-------|-------|
+| `Hero` | `<Hero title={…} image={…} synopsis={…} classification={…} rating={…} />` | `<Hero movie={featured} />` |
+| `MovieCard` | `<MovieCard key={movie.id} title={…} image={…} rating={…} showtimes={…} />` | `<MovieCard key={movie.id} movie={movie} />` |
+
+Dentro de cada componente se desestructuran solo los campos que se usan:
+
+```jsx
+function Hero({ movie }) {
+  const { title, image, synopsis, classification, rating } = movie
+  // ...
+}
+
+function MovieCard({ movie }) {
+  const { title, image, rating, showtimes } = movie
+  // ...
+}
+```
+
+Así se conserva la idea de la regla: la firma de cada componente deja ver qué campos necesita,
+aunque reciba el objeto entero. Es el mismo criterio que el `ui-reviewer` aceptó para `Footer`
+con `contact`. El HTML generado es idéntico. `npm run lint` no da errores ni avisos y
+`npm run build` compila correctamente.
+
+- Commit: `Hero y MovieCard reciben la película por props, según la guía`.

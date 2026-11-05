@@ -14,7 +14,7 @@ Los datos son estáticos (`src/data/movies.js`) y los pósters son SVG propios. 
 
 1. **Vite como herramienta de desarrollo:** Proyecto creado con la plantilla `react` de Vite, servidor de desarrollo con recarga en caliente (HMR), compilación de producción en `dist/` (excluida de Git) y análisis estático con ESLint.
 2. **Componentes funcionales con JSX:** Cinco componentes en PascalCase. Cada uno vive en su carpeta con su `.jsx` y su `.css`, y usa HTML semántico (`header`, `nav`, `main`, `section`, `article`, `footer`), `className` y `alt` en todas las imágenes.
-3. **Props de padre a hijos:** `App` es el único componente que importa los datos y los reparte por props. Cada hijo recibe solo los campos que usa y no tiene estado ni hooks: son componentes de presentación.
+3. **Props de padre a hijos:** `App` es el único componente que importa los datos y los reparte por props. `Hero` y `MovieCard` reciben la película completa por props (`movie`) y desestructuran dentro solo los campos que usan. Ningún hijo tiene estado ni hooks: son componentes de presentación.
 4. **Listas con `map` y `key`:** `MovieList` recorre la cartelera con `movies.map(...)` y asigna a cada `MovieCard` una `key={movie.id}` estable y única. `Header` y `MovieCard` hacen lo mismo con los enlaces (`link.id`) y los horarios.
 
 ## 🔗 Enlaces de Acceso Local (Desarrollo)
@@ -89,9 +89,9 @@ frontend/
 Cada película de `movies.js` tiene `id`, `title`, `image`, `synopsis`, `classification` (APT, +14, +18), `rating` (de 0 a 10) y `showtimes`.
 
 - **`Header`** (`name`, `navLinks`): `<header>` fijo con el nombre del cine como `<h1>` y un `<nav>` con los enlaces a Cartelera, Horarios y Contacto.
-- **`Hero`** (`title`, `image`, `synopsis`, `classification`, `rating`): `<section>` con la película destacada, que `App` elige como la de mayor valoración. Muestra el póster, el título (`<h2>`), la insignia de clasificación con su color, la valoración `★ x/10` y la sinopsis.
-- **`MovieList`** (`movies`): `<section id="cartelera">` con el título "Cartelera" y una rejilla responsiva (`id="horarios"`). Recorre las películas con `map` y pasa a cada `MovieCard` solo cuatro campos, con `key={movie.id}`.
-- **`MovieCard`** (`title`, `image`, `rating`, `showtimes`): `<article>` con el póster (`alt="Póster de …"`, carga diferida), el título (`<h3>`), la valoración y la lista de horarios con `<time>`.
+- **`Hero`** (`movie`, del que usa `title`, `image`, `synopsis`, `classification` y `rating`): `<section>` con la película destacada, que `App` elige como la de mayor valoración. Muestra el póster, el título (`<h2>`), la insignia de clasificación con su color, la valoración `★ x/10` y la sinopsis.
+- **`MovieList`** (`movies`): `<section id="cartelera">` con el título "Cartelera" y una rejilla responsiva (`id="horarios"`). Recorre las películas con `map` y pasa a cada `MovieCard` su película: `<MovieCard key={movie.id} movie={movie} />`.
+- **`MovieCard`** (`movie`, del que usa `title`, `image`, `rating` y `showtimes`): `<article>` con el póster (`alt="Póster de …"`, carga diferida), el título (`<h3>`), la valoración y la lista de horarios con `<time>`.
 - **`Footer`** (`name`, `contact`): `<footer id="contacto">` con la dirección (`<address>`), un enlace `tel:`, un enlace `mailto:`, el horario y el copyright con el año actual.
 
 **Recorte de la pantalla en componentes:**
@@ -103,8 +103,8 @@ Cada película de `movies.js` tiene `id`, `title`, `image`, `synopsis`, `classif
 ├──────────────────────────────────────────────────────────────────┤
 │ <main>                                                           │
 │ ┌──────────────────────────────────────────────────────────────┐ │
-│ │ <Hero>   props: title, image, synopsis, classification,      │ │
-│ │                 rating   (película destacada)                │ │ ← <section>
+│ │ <Hero>   props: movie  (película destacada; usa title,       │ │
+│ │          image, synopsis, classification, rating)            │ │ ← <section>
 │ │  ┌────────┐  Película destacada                              │ │
 │ │  │ póster │  Ecos de Marte (h2)                              │ │
 │ │  │        │  [+14]  ★ 8.4/10                                 │ │
@@ -120,7 +120,7 @@ Cada película de `movies.js` tiene `id`, `title`, `image`, `synopsis`, `classif
 │ │  │  ★ 7.8/10   │ │  ★ 8.4/10   │ │  ★ 7.2/10   │   total)    │ │   key={movie.id}
 │ │  │  14:30 17:00│ │  15:15 …    │ │  16:00 …    │             │ │
 │ │  └─────────────┘ └─────────────┘ └─────────────┘             │ │
-│ │  MovieCard props: title, image, rating, showtimes            │ │
+│ │  MovieCard props: movie (usa title, image, rating, showtimes)│ │
 │ └──────────────────────────────────────────────────────────────┘ │
 ├──────────────────────────────────────────────────────────────────┤
 │ <Footer>   props: name, contact          id="contacto"           │ ← <footer>

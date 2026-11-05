@@ -8,7 +8,9 @@ const BADGE_MODIFIERS = {
 }
 
 // Banner that highlights the featured movie.
-function Hero({ title, image, synopsis, classification, rating }) {
+// Receives the whole movie and destructures only the fields it renders.
+function Hero({ movie }) {
+  const { title, image, synopsis, classification, rating } = movie
   // Unknown classifications get the neutral base badge instead of a misleading color.
   const badgeModifier = BADGE_MODIFIERS[classification]
   const badgeClass = badgeModifier

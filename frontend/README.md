@@ -25,15 +25,15 @@ src/
 ├── styles/           # variables.css (tokens) + global.css (estilos base)
 └── components/       # Componente/Componente.jsx + Componente.css
     ├── Header/       # name, navLinks
-    ├── Hero/         # title, image, synopsis, classification, rating
-    ├── MovieList/    # movies → <MovieCard key={movie.id} />
-    ├── MovieCard/    # title, image, rating, showtimes
+    ├── Hero/         # movie → title, image, synopsis, classification, rating
+    ├── MovieList/    # movies → <MovieCard key={movie.id} movie={movie} />
+    ├── MovieCard/    # movie → title, image, rating, showtimes
     └── Footer/       # name, contact
 public/posters/       # pósters SVG
 ```
 
-Todos los componentes son funcionales y de presentación: reciben solo las props que usan y no
-tienen estado ni hooks. Usan HTML semántico (`header`, `nav`, `main`, `section`, `article`,
+Todos los componentes son funcionales y de presentación, sin estado ni hooks. `Hero` y
+`MovieCard` reciben la película por props (`movie`) y desestructuran solo los campos que usan. Usan HTML semántico (`header`, `nav`, `main`, `section`, `article`,
 `footer`) y todas las imágenes tienen `alt`.
 
 ## Dependencias

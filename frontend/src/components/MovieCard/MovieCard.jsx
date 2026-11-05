@@ -1,7 +1,9 @@
 import './MovieCard.css'
 
 // Card for a single movie: poster, title, rating and showtimes.
-function MovieCard({ title, image, rating, showtimes }) {
+// Receives the whole movie and destructures only the fields it renders.
+function MovieCard({ movie }) {
+  const { title, image, rating, showtimes } = movie
   return (
     <article className="movie-card">
       <img

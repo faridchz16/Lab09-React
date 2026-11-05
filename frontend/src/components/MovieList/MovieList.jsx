@@ -12,13 +12,7 @@ function MovieList({ movies }) {
         {/* Cards show the showtimes, so the grid is the target of #horarios. */}
         <div id="horarios" className="movie-list__grid">
           {movies.map((movie) => (
-            <MovieCard
-              key={movie.id}
-              title={movie.title}
-              image={movie.image}
-              rating={movie.rating}
-              showtimes={movie.showtimes}
-            />
+            <MovieCard key={movie.id} movie={movie} />
           ))}
         </div>
       </div>

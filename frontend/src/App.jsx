@@ -15,13 +15,7 @@ function App() {
     <>
       <Header name={cinema.name} navLinks={cinema.navLinks} />
       <main>
-        <Hero
-          title={featured.title}
-          image={featured.image}
-          synopsis={featured.synopsis}
-          classification={featured.classification}
-          rating={featured.rating}
-        />
+        <Hero movie={featured} />
         <MovieList movies={movies} />
       </main>
       <Footer name={cinema.name} contact={cinema.contact} />
