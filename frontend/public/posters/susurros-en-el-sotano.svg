@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 450" width="300" height="450">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3a3a3a"/>
+      <stop offset="1" stop-color="#050505"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="450" fill="url(#bg)"/>
+  <rect x="105" y="110" width="90" height="150" fill="#6b1d1d"/><circle cx="178" cy="190" r="6" fill="#d4af37"/>
+  <g fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" text-anchor="middle">
+    <text x="150" y="332">Susurros en</text>
+    <text x="150" y="372">el sótano</text>
+  </g>
+</svg>
