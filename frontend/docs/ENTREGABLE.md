@@ -57,3 +57,18 @@ Verificación: `npm run lint` sin errores ni avisos y `npm run build` compila co
 ## Paso 5 – Documentación del entregable
 
 - Se creó este archivo, `frontend/docs/ENTREGABLE.md`, con el registro de cada paso.
+- Commit: `Documentación del entregable del laboratorio 09` (`f7d9c0f`).
+
+## Traslado al repositorio Lab09-React
+
+El laboratorio 09 se trasladó a un repositorio propio para que Lab08-Django quede como se entregó:
+
+1. Con `git log --oneline -15` se confirmó que `dbd0cd2` ("Add files via upload") era el último
+   commit del lab 08 y que los cinco posteriores eran del lab 09.
+2. Se agregó el remoto `lab09` (https://github.com/faridchz16/Lab09-React.git) y se ejecutó
+   `git push lab09 main`, que copió todo el historial (lab 08 + lab 09, hasta `f7d9c0f`).
+3. Se restauró Lab08-Django con `git push --force-with-lease origin dbd0cd2:main` y se verificó
+   con `git ls-remote origin main` que apunta a `dbd0cd2`.
+4. Se eliminó el remoto `lab09` y `origin` pasó a ser https://github.com/faridchz16/Lab09-React.git.
+5. Se actualizó `CLAUDE.md` para indicar que el repositorio es Lab09-React, continuación del lab 08.
+   Commit: `Actualización de CLAUDE.md: el repositorio pasa a ser Lab09-React` (`1bbda23`).
