@@ -72,3 +72,91 @@ El laboratorio 09 se trasladó a un repositorio propio para que Lab08-Django que
 4. Se eliminó el remoto `lab09` y `origin` pasó a ser https://github.com/faridchz16/Lab09-React.git.
 5. Se actualizó `CLAUDE.md` para indicar que el repositorio es Lab09-React, continuación del lab 08.
    Commit: `Actualización de CLAUDE.md: el repositorio pasa a ser Lab09-React` (`1bbda23`).
+
+## Nota sobre el subagente react-dev
+
+Los pasos 3 y 4 se encargaron al subagente `react-dev`. Como `.claude/agents/react-dev.md` se creó
+en mitad de la sesión y Claude Code solo carga los subagentes al iniciar, no se pudo invocar por su
+nombre. Se usó un agente general al que se le indicó leer `react-dev.md` y adoptar su rol y sus
+restricciones (solo tocar `frontend/`, componentes funcionales, código en inglés, lint sin avisos).
+
+## Paso 3 – Organización de `src/` y arquitectura de CSS
+
+Estructura resultante:
+
+```
+frontend/
+├── public/
+│   └── posters/            # 8 pósters SVG (uno por película)
+└── src/
+    ├── main.jsx            # punto de entrada: importa global.css y monta <App />
+    ├── App.jsx             # componente raíz
+    ├── components/         # un componente por carpeta: Componente/Componente.jsx + .css
+    ├── data/
+    │   └── movies.js       # datos de películas y del cine
+    └── styles/
+        ├── variables.css   # tokens de diseño (colores, tipografía, espaciado…)
+        └── global.css      # estilos base globales
+```
+
+Por qué cada cosa va en su carpeta:
+
+- **`components/`**: aquí vivirán los componentes de presentación. Cada uno tiene su propia carpeta
+  con su `.jsx` y su `.css`, de modo que todo lo de un componente está junto: se encuentra rápido,
+  se puede mover o borrar sin dejar restos y sus estilos no se mezclan con los de otros. Por ahora
+  solo tiene un `.gitkeep` para que Git guarde la carpeta vacía.
+- **`data/`**: separa los datos de la presentación. Los componentes no saben de dónde salen las
+  películas; las reciben por props desde `App`. Si más adelante los datos vienen de una API
+  (por ejemplo, el backend Django del lab 08), solo cambia esta capa.
+- **`styles/`**: estilos que no pertenecen a ningún componente concreto.
+  - `variables.css` define en `:root` los tokens de diseño: colores (fondo, superficies, texto,
+    color primario `#e50914`, estrella de rating `#f5c518`, insignias de clasificación APT/+14/+18),
+    tipografía (familias, escala de tamaños, pesos, interlineado), espaciado (`--space-1` a
+    `--space-8`), ancho máximo del contenedor, radios y sombras. Cambiar el aspecto de toda la
+    aplicación es cuestión de editar este archivo.
+  - `global.css` importa las variables y aplica los estilos base: reset de `box-sizing` y márgenes,
+    fuente y colores del `body`, imágenes responsivas, enlaces, encabezados, la utilidad
+    `.container` y el contorno de `:focus-visible` para accesibilidad.
+  - Se importa una sola vez en `main.jsx`, así queda claro cuál es la única hoja global.
+- **CSS por componente**: cada `Componente.css` se importa desde su `Componente.jsx` y solo usa las
+  variables de `variables.css`, nunca colores o tamaños escritos a mano.
+
+`App.jsx` se mantiene mínimo (`<main className="container">` con el título).
+`npm run lint` y `npm run build` pasan sin avisos.
+
+- Commit: `Organización de src/ en carpetas y arquitectura de CSS` (`5e669c3`) y push.
+
+## Paso 4 – Datos de películas, del cine y pósters
+
+`frontend/src/data/movies.js` tiene dos exportaciones con nombre:
+
+- **`movies`**: 8 películas inventadas con `id`, `title`, `image`, `synopsis`, `classification`,
+  `rating` (escala de 0 a 10 con un decimal) y `showtimes`:
+
+  | id | Título | Clasificación | Rating | Horarios |
+  |----|--------|---------------|--------|----------|
+  | 1 | El último faro | APT | 7.8 | 14:30, 17:00, 19:45 |
+  | 2 | Ecos de Marte | +14 | 8.4 | 15:15, 18:30, 21:45 |
+  | 3 | La ciudad sin sombras | +14 | 7.2 | 16:00, 20:15 |
+  | 4 | Noche de cristal | +18 | 6.9 | 20:00, 22:30 |
+  | 5 | El jardín de relojes | APT | 8.1 | 13:00, 15:30, 18:00 |
+  | 6 | Frontera helada | +14 | 7.5 | 17:45, 20:30 |
+  | 7 | Susurros en el sótano | +18 | 6.4 | 21:00, 23:15 |
+  | 8 | Pequeños gigantes | APT | 7.9 | 12:30, 14:45, 17:15 |
+
+- **`cinema`**: datos del cine "Cine Aurora": `name`, `navLinks` (Cartelera `#cartelera`,
+  Horarios `#horarios`, Contacto `#contacto`) y `contact` (dirección, teléfono, correo
+  `contacto@example.com` y horario), todos ficticios.
+
+Pósters: `frontend/public/posters/<slug>.svg`, uno por película. Son SVG de 300×450, de menos de
+1 KB cada uno, con un fondo en degradado, una figura geométrica sencilla y el título.
+
+Por qué están en `public/` y no en `src/assets/`: Vite sirve `public/` tal cual en la raíz del
+sitio, así que una ruta como `/posters/el-ultimo-faro.svg` puede guardarse como texto en los
+datos. Con eso `movies.js` no tiene que importar cada imagen. Además se parece a lo que devolvería
+una API real, donde la imagen es una URL.
+
+Los datos todavía no se usan en ningún componente; eso corresponde a los pasos siguientes.
+`npm run lint` y `npm run build` pasan sin avisos.
+
+- Commit: `Creación de los datos de películas y del cine con pósters SVG` (`13da241`) y push.
