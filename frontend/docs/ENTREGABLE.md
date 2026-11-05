@@ -192,3 +192,35 @@ necesita:
 El `Header` queda fuera de `<main>`, como corresponde a un encabezado de página.
 
 Resultado: `npm run build` compila sin errores (19 módulos) y `npm run lint` no muestra avisos.
+
+## Paso 6 – Componente Footer
+
+Archivos: `src/components/Footer/Footer.jsx` y `Footer.css`.
+
+Props:
+
+| Prop | Tipo | Descripción |
+|------|------|-------------|
+| `name` | `string` | Nombre del cine, usado en la línea de copyright. |
+| `contact` | `{ address: string, phone: string, email: string, schedule: string }` | Datos de contacto del cine. |
+
+Qué renderiza:
+
+- Un `<footer id="contacto" className="footer">`: el `id` es el destino del enlace "Contacto"
+  (`#contacto`) del `Header`.
+- Un `<h2>Contacto</h2>` y un `<address>` (el elemento semántico para datos de contacto) con la
+  dirección, el teléfono como enlace `tel:` (se quitan los espacios del número para que el URI sea
+  válido) y el correo como enlace `mailto:`.
+- Un párrafo con el horario de atención.
+- La línea `© <año> Cine Aurora. Todos los derechos reservados.`; el año se calcula con
+  `new Date().getFullYear()` directamente en el cuerpo de la función, sin estado ni hooks.
+
+Uso en `App`:
+
+```jsx
+<Footer name={cinema.name} contact={cinema.contact} />
+```
+
+Va fuera de `<main>`, después del contenido principal.
+
+Resultado: `npm run build` compila sin errores y `npm run lint` no muestra avisos.
