@@ -300,7 +300,7 @@ datos necesita. Si el objeto de datos crece, la tarjeta no se entera.
 Qué renderiza:
 
 - Un `<article className="movie-card">`, porque cada tarjeta es un contenido independiente.
-- El póster en `<img>` con `alt={`Póster de ${title}`}`, dimensiones intrínsecas, proporción 2:3
+- El póster en `<img>` con ``alt={`Póster de ${title}`}``, dimensiones intrínsecas, proporción 2:3
   y `loading="lazy"` (las tarjetas suelen quedar por debajo del primer pantallazo).
 - El título en `<h3>` (por debajo del `<h2>` de la sección que las contendrá) y la valoración
   (`★ 7.8/10`) en color `--color-rating`.
@@ -326,3 +326,78 @@ El `style` en línea solo limita el ancho de esta tarjeta suelta para que el pó
 pantalla, y desaparece en el paso 9.
 
 Resultado: `npm run build` compila sin errores y `npm run lint` no muestra avisos.
+
+## Paso 9 – Componente MovieList
+
+Archivos: `src/components/MovieList/MovieList.jsx` y `MovieList.css`.
+
+Props:
+
+| Prop | Tipo | Descripción |
+|------|------|-------------|
+| `movies` | `Array<{ id, title, image, rating, showtimes, … }>` | Películas en cartelera. |
+
+Qué renderiza:
+
+- Un `<section id="cartelera" className="movie-list">` etiquetado por su título con
+  `aria-labelledby`; `id="cartelera"` es el destino del enlace "Cartelera" del `Header`.
+- Un `<h2>Cartelera</h2>` y una rejilla CSS responsiva (`.movie-list__grid`) con
+  `repeat(auto-fill, minmax(min(100%, calc(var(--space-8) * 3.5)), 1fr))`: tantas columnas como
+  quepan, de un mínimo de 14rem, y una sola columna en pantallas estrechas sin desbordar.
+- Un `MovieCard` por película. `MovieList` recorre el arreglo y pasa a cada tarjeta solo sus cuatro
+  campos, con `key={movie.id}`, el identificador estable de los datos:
+
+  ```jsx
+  <MovieCard
+    key={movie.id}
+    title={movie.title}
+    image={movie.image}
+    rating={movie.rating}
+    showtimes={movie.showtimes}
+  />
+  ```
+
+- `scroll-margin-block-start` en la sección y en la rejilla para que, al saltar desde el menú, el
+  contenido no quede tapado por el `Header` fijo.
+
+Uso en `App`: `<MovieList movies={movies} />` sustituye a la tarjeta suelta (y a su `div` con
+`style` en línea) del paso 8.
+
+### Anclas del menú
+
+| Enlace | Destino |
+|--------|---------|
+| `#cartelera` | `<section id="cartelera">` de `MovieList`. |
+| `#horarios` | `<div id="horarios">`, la rejilla de tarjetas de `MovieList`. |
+| `#contacto` | `<footer id="contacto">` de `Footer`. |
+
+No hay una sección propia de horarios, así que en lugar de inventar un componente nuevo se puso
+`id="horarios"` en la rejilla de `MovieList`: es el lugar de la página donde se ven los horarios,
+porque cada tarjeta muestra los de su película.
+
+### `App.jsx` final
+
+```jsx
+<>
+  <Header name={cinema.name} navLinks={cinema.navLinks} />
+  <main>
+    <Hero
+      title={featured.title}
+      image={featured.image}
+      synopsis={featured.synopsis}
+      classification={featured.classification}
+      rating={featured.rating}
+    />
+    <MovieList movies={movies} />
+  </main>
+  <Footer name={cinema.name} contact={cinema.contact} />
+</>
+```
+
+`Header` y `Footer` quedan fuera de `<main>`; cada componente usa `.container` por dentro para
+limitar el ancho.
+
+Además se corrigió en el paso 8 de este documento un fragmento de código en línea con comillas
+invertidas anidadas que no se veía bien.
+
+Resultado: `npm run build` compila sin errores (27 módulos) y `npm run lint` no muestra avisos.
