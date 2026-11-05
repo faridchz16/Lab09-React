@@ -16,11 +16,11 @@
   padding-block: var(--space-3);
 }
 
-.header__brand {
-  font-family: var(--font-heading);
+.header__title {
   font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-tight);
+}
+
+.header__brand {
   color: var(--color-primary);
 }
 

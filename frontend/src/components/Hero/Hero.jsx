@@ -1,0 +1,42 @@
+import './Hero.css'
+
+// Maps each classification to the modifier class that colors its badge.
+const BADGE_MODIFIERS = {
+  APT: 'apt',
+  '+14': '14',
+  '+18': '18',
+}
+
+// Banner that highlights the featured movie.
+function Hero({ title, image, synopsis, classification, rating }) {
+  const badgeModifier = BADGE_MODIFIERS[classification] ?? 'apt'
+
+  return (
+    <section className="hero" aria-labelledby="hero-title">
+      <div className="container hero__inner">
+        <img
+          className="hero__poster"
+          src={image}
+          alt={`Póster de ${title}`}
+          width="300"
+          height="450"
+        />
+        <div className="hero__content">
+          <p className="hero__eyebrow">Película destacada</p>
+          <h2 id="hero-title" className="hero__title">
+            {title}
+          </h2>
+          <div className="hero__meta">
+            <span className={`hero__badge hero__badge--${badgeModifier}`}>
+              {classification}
+            </span>
+            <span className="hero__rating">★ {rating}/10</span>
+          </div>
+          <p className="hero__synopsis">{synopsis}</p>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+export default Hero

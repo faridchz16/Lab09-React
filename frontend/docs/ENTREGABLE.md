@@ -224,3 +224,58 @@ Uso en `App`:
 Va fuera de `<main>`, después del contenido principal.
 
 Resultado: `npm run build` compila sin errores y `npm run lint` no muestra avisos.
+
+## Paso 7 – Componente Hero
+
+Archivos: `src/components/Hero/Hero.jsx` y `Hero.css`.
+
+Props (campos sueltos, no el objeto película completo, para que el componente reciba solo lo que
+usa):
+
+| Prop | Tipo | Descripción |
+|------|------|-------------|
+| `title` | `string` | Título de la película destacada. |
+| `image` | `string` | Ruta del póster (por ejemplo, `/posters/ecos-de-marte.svg`). |
+| `synopsis` | `string` | Sinopsis breve. |
+| `classification` | `string` | Clasificación por edad: `APT`, `+14` o `+18`. |
+| `rating` | `number` | Valoración de 0 a 10 con un decimal. |
+
+Qué renderiza:
+
+- Un `<section className="hero">` con fondo en degradado a todo el ancho y el contenido dentro de
+  `.container`. La sección se etiqueta con su título mediante `aria-labelledby`.
+- El póster como `<img>` con texto alternativo descriptivo (`Póster de Ecos de Marte`) y
+  `width`/`height` intrínsecos (300×450) para reservar el espacio mientras carga.
+- Un antetítulo "Película destacada", el título en `<h2>`, la insignia de clasificación y la
+  valoración (`★ 8.4/10`) y la sinopsis.
+- La insignia toma su color de un modificador (`hero__badge--apt`, `--14`, `--18`) que usa las
+  variables `--color-badge-*`. El ancho del póster se expresa como múltiplo de un token de
+  espaciado (`calc(var(--space-8) * 4)`), sin tamaños escritos a mano.
+
+Uso en `App`: la película destacada es la de mayor valoración. Se calcula con un `reduce` de
+código normal, fuera del componente y sin hooks (los datos son estáticos):
+
+```jsx
+const featured = movies.reduce((best, movie) =>
+  movie.rating > best.rating ? movie : best,
+)
+
+<Hero
+  title={featured.title}
+  image={featured.image}
+  synopsis={featured.synopsis}
+  classification={featured.classification}
+  rating={featured.rating}
+/>
+```
+
+Con los datos actuales es "Ecos de Marte" (8.4).
+
+Cambios relacionados en este paso:
+
+- `<main>` deja de llevar `className="container"`: cada sección pone su propio `.container`, así
+  el fondo del Hero ocupa todo el ancho.
+- Se quitó el `<h1>Cartelera de cine</h1>` provisional de `<main>`. Para que la página siga teniendo
+  un `<h1>`, el nombre del cine en el `Header` pasa a estar dentro de un `<h1 className="header__title">`.
+
+Resultado: `npm run build` compila sin errores y `npm run lint` no muestra avisos.
