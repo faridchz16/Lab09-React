@@ -279,3 +279,50 @@ Cambios relacionados en este paso:
   un `<h1>`, el nombre del cine en el `Header` pasa a estar dentro de un `<h1 className="header__title">`.
 
 Resultado: `npm run build` compila sin errores y `npm run lint` no muestra avisos.
+
+## Paso 8 – Componente MovieCard
+
+Archivos: `src/components/MovieCard/MovieCard.jsx` y `MovieCard.css`.
+
+Props (los cuatro campos pedidos, por separado):
+
+| Prop | Tipo | Descripción |
+|------|------|-------------|
+| `title` | `string` | Título de la película. |
+| `image` | `string` | Ruta del póster. |
+| `rating` | `number` | Valoración de 0 a 10. |
+| `showtimes` | `string[]` | Horarios de función, en formato `HH:MM`. |
+
+Pasar los campos individuales en lugar del objeto `movie` completo mantiene las props al mínimo:
+la tarjeta no recibe `synopsis`, `classification` ni `id`, que no usa, y su firma deja claro qué
+datos necesita. Si el objeto de datos crece, la tarjeta no se entera.
+
+Qué renderiza:
+
+- Un `<article className="movie-card">`, porque cada tarjeta es un contenido independiente.
+- El póster en `<img>` con `alt={`Póster de ${title}`}`, dimensiones intrínsecas, proporción 2:3
+  y `loading="lazy"` (las tarjetas suelen quedar por debajo del primer pantallazo).
+- El título en `<h3>` (por debajo del `<h2>` de la sección que las contendrá) y la valoración
+  (`★ 7.8/10`) en color `--color-rating`.
+- Los horarios como `<ul>` de `<li>` con un elemento `<time>`. La `key` de cada `<li>` es la propia
+  cadena del horario, que es única dentro de una película. La lista lleva
+  `aria-label="Horarios de <título>"` para lectores de pantalla.
+
+Uso en `App` en este paso: se muestra una sola tarjeta, con la primera película, para poder verla.
+Es provisional: el siguiente paso la reemplaza por `MovieList`.
+
+```jsx
+<div className="container" style={{ maxWidth: 'calc(var(--space-8) * 5)' }}>
+  <MovieCard
+    title={movies[0].title}
+    image={movies[0].image}
+    rating={movies[0].rating}
+    showtimes={movies[0].showtimes}
+  />
+</div>
+```
+
+El `style` en línea solo limita el ancho de esta tarjeta suelta para que el póster no ocupe toda la
+pantalla, y desaparece en el paso 9.
+
+Resultado: `npm run build` compila sin errores y `npm run lint` no muestra avisos.
