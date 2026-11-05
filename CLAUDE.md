@@ -2,7 +2,11 @@
 
 ## Descripción del repositorio
 
-Repositorio acumulativo de laboratorios:
+Este repositorio es **Lab09-React** (https://github.com/faridchz16/Lab09-React), continuación del
+laboratorio 08: parte del historial completo de Lab08-Django (hasta el commit `dbd0cd2`) y añade
+encima el frontend del laboratorio 09. El repositorio Lab08-Django se mantiene sin cambios.
+
+Contenido:
 
 - **Laboratorio 08 – Backend Django** (raíz del repo): API REST de cuestionarios con Django REST Framework
   (`config/`, `quiz/`), cliente de consola `quizctl.py`, contrato OpenAPI `schema.yml` y pasarela
