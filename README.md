@@ -141,18 +141,31 @@ Cada error se provocó a propósito, sin commit, y se revirtió después de la c
      ```
      Invalid DOM property `class`. Did you mean `className`?
      ```
-   - *Explicación:* JSX se transforma en JavaScript y los atributos son propiedades de un objeto. En el DOM la propiedad se llama `className`, porque `class` es una palabra reservada de JavaScript. El código compila y React solo lo avisa en la consola en modo desarrollo.
+   - *Explicación:* JSX se transforma en JavaScript y los atributos son propiedades de un objeto. En el DOM la propiedad se llama `className`, porque `class` es una palabra reservada de JavaScript. El código compila. React lo informa en la consola solo en modo desarrollo (en rojo, porque usa `console.error`), pero la página se sigue mostrando.
+   - *Captura:*
+
+     ![Error class en lugar de className](Evidencias_lab09/04_error_class_className.png)
 
 2. **Dos nodos raíz sin fragmento (error de compilación):**
    - *Cambio:* en `Footer.jsx` el párrafo del copyright quedó fuera de `</footer>`, y el `return` devolvía dos elementos hermanos.
-   - *Mensaje:*
+   - *Mensaje* (plugin `vite:oxc`, en la terminal y en el overlay del navegador):
      ```
-     [builtin:vite-transform] Adjacent JSX elements must be wrapped in an enclosing tag.
-         ╭─[ src/components/Footer/Footer.jsx:31:5 ]
-      31 │     <p className="footer__copyright">
-         │ Help: Did you want a JSX fragment `<>...</>`?
+     [plugin:vite:oxc] Transform failed with 1 error:
+     [PARSE_ERROR] Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+         ╭─[ src/components/Footer/Footer.jsx:30:1 ]
+      30 │ }
      ```
-   - *Explicación:* cada elemento JSX es una sola expresión y un `return` solo puede devolver un valor. Dos elementos seguidos no son sintaxis válida, así que Vite no puede transformar el archivo y la aplicación no carga. Solución: envolverlos en un fragmento `<>...</>`.
+   - *Explicación:*
+     - **Error de compilación:** cada elemento JSX es una sola expresión y un `return` solo puede devolver un valor. Si el JSX no es sintaxis válida, el compilador falla antes de ejecutar nada, Vite responde con un 500 al pedir `Footer.jsx` y la aplicación no se actualiza.
+     - **Compilador oxc:** Vite 8 transforma el JSX con **oxc** (plugin `vite:oxc`) en lugar de esbuild o Babel. Su parser informa del primer *token* inesperado, y por eso el mensaje difiere del clásico "Adjacent JSX elements must be wrapped in an enclosing tag".
+     - **Este mensaje en concreto:** el cambio se guardó en dos escrituras, y Vite recompiló entre ellas, cuando `<footer>` y `<div>` aún estaban abiertos. oxc tomó `)` como texto JSX y no aceptó la `}` suelta de la línea 30.
+     - **Estado final:** con los dos nodos raíz completos, oxc da el mensaje específico (`Adjacent JSX elements must be wrapped in an enclosing tag`, en `Footer.jsx:31:5`), como se comprobó con `npm run build`.
+     - **Solución:** envolver los elementos en un fragmento `<>...</>`.
+   - *Capturas:*
+
+     ![Error de dos nodos raíz en el navegador](Evidencias_lab09/05_error_dos_nodos_raiz_navegador.png)
+
+     ![Error de dos nodos raíz en la terminal](Evidencias_lab09/06_error_dos_nodos_raiz_terminal.png)
 
 3. **`map` sin `key` (aviso de listas):**
    - *Cambio:* en `MovieList.jsx` se quitó `key={movie.id}` del `<MovieCard>` generado en `movies.map(...)`.
@@ -161,6 +174,9 @@ Cada error se provocó a propósito, sin commit, y se revirtió después de la c
      Each child in a list should have a unique "key" prop. Check the render method of `MovieList`.
      ```
    - *Explicación:* React usa la `key` para identificar cada elemento entre renders y decidir qué crear, mover o eliminar (reconciliación). Sin ella solo se guía por la posición. La página se ve bien, pero React avisa porque reordenar o filtrar la lista podría reutilizar mal los nodos. La `key` debe ser estable y única (`movie.id`), no el índice.
+   - *Captura:*
+
+     ![Error key en map](Evidencias_lab09/07_error_key_en_map.png)
 
 ## 🤖 Agentes Utilizados en Claude Code
 
@@ -200,28 +216,44 @@ El historial del Lab 09 parte del último commit del Lab 08 (`dbd0cd2`) y está 
 
 ## 📸 Capturas y Evidencias
 
-A continuación se muestran las principales evidencias del funcionamiento y de las pruebas del proyecto, almacenadas en la carpeta `Evidencias_lab09/`:
+A continuación se muestran las principales evidencias del desarrollo, el funcionamiento y las pruebas del proyecto, almacenadas en la carpeta `Evidencias_lab09/`. Las capturas 08 a 10 se tomaron automáticamente con Playwright (ejecutado con `npx`, sin añadirlo como dependencia):
 
-1. **Cartelera Completa en el Navegador:**
-   ![Cartelera completa](Evidencias_lab09/01_cartelera_completa.png)
+1. **Creación del Proyecto con Vite:**
+   Clonado del repositorio del Lab 08, verificación de Node (`v24.15.0`) y ejecución de `npm create vite@latest frontend`.
+   ![Creación del proyecto con Vite](Evidencias_lab09/01_creacion_proyecto_vite.png)
 
-2. **Header y Película Destacada (Hero):**
-   ![Header y Hero](Evidencias_lab09/02_header_hero.png)
+2. **Estructura de Carpetas:**
+   Explorador con `frontend/src/` organizado en `components/`, `data/` (`movies.js`) y `styles/` (`global.css`, `variables.css`), junto al backend del Lab 08.
+   ![Estructura de carpetas](Evidencias_lab09/02_estructura_carpetas.png)
 
-3. **Rejilla de la Cartelera (MovieList y MovieCard):**
-   ![Rejilla de la cartelera](Evidencias_lab09/03_rejilla_cartelera.png)
+3. **Cartelera en el Navegador:**
+   Header con navegación, Hero con la película destacada ("Ecos de Marte", +14, ★ 8.4/10) y la primera fila de la rejilla de la cartelera.
+   ![Cartelera en el navegador](Evidencias_lab09/03_cartelera_completa.png)
 
-4. **Footer con los Datos de Contacto:**
-   ![Footer](Evidencias_lab09/04_footer_contacto.png)
+4. **Error 1 – `class` en lugar de `className`:**
+   Consola de DevTools con el aviso `` Invalid DOM property `class`. Did you mean `className`? `` en `MovieCard.jsx:6`; la página se sigue mostrando.
+   ![Error class en lugar de className](Evidencias_lab09/04_error_class_className.png)
 
-5. **Error 1 – `class` en lugar de `className`:**
-   ![Error class](Evidencias_lab09/05_error_class_classname.png)
+5. **Error 2 – Dos nodos raíz (navegador):**
+   Overlay de Vite `[plugin:vite:oxc] Transform failed with 1 error` con el `PARSE_ERROR` en `Footer.jsx:30:1`, y la consola con el 500 al cargar `Footer.jsx`.
+   ![Error de dos nodos raíz en el navegador](Evidencias_lab09/05_error_dos_nodos_raiz_navegador.png)
 
-6. **Error 2 – Dos nodos raíz sin fragmento:**
-   ![Error nodos raíz](Evidencias_lab09/06_error_nodos_raiz.png)
+6. **Error 2 – Dos nodos raíz (terminal):**
+   Servidor de desarrollo con `Internal server error: Transform failed with 1 error` y el mismo `PARSE_ERROR` del plugin `vite:oxc`.
+   ![Error de dos nodos raíz en la terminal](Evidencias_lab09/06_error_dos_nodos_raiz_terminal.png)
 
 7. **Error 3 – `map` sin `key`:**
-   ![Error key](Evidencias_lab09/07_error_key_map.png)
+   Consola con `` Each child in a list should have a unique "key" prop. Check the render method of `MovieList`. `` en `MovieList.jsx:15`.
+   ![Error key en map](Evidencias_lab09/07_error_key_en_map.png)
 
-8. **Compilación y Lint sin Errores (`npm run build` y `npm run lint`):**
-   ![Build y lint](Evidencias_lab09/08_build_lint.png)
+8. **Cartelera, Página Completa (escritorio 1440×900):**
+   Toda la página: Header, Hero, las 8 películas en una rejilla de 4 columnas y el Footer.
+   ![Cartelera página completa](Evidencias_lab09/08_cartelera_pagina_completa.png)
+
+9. **Footer:**
+   Captura solo del elemento `<footer id="contacto">`, con la dirección, el teléfono, el correo, el horario y el copyright.
+   ![Footer](Evidencias_lab09/09_footer.png)
+
+10. **Vista Móvil (390×844, página completa):**
+    La rejilla pasa a una sola columna y la navegación se adapta al ancho del móvil.
+    ![Vista móvil](Evidencias_lab09/10_vista_movil.png)

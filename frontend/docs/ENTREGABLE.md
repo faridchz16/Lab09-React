@@ -526,7 +526,29 @@ no es correcto y el aviso indica cómo arreglarlo.
 **Cambio:** en `Footer.jsx` el párrafo del copyright se sacó fuera de `</footer>`, de modo que el
 `return` devolvía dos elementos hermanos (`<footer>` y `<p>`) sin nada que los envolviera.
 
-**Mensaje (`npm run build`, igual que en el overlay del servidor de desarrollo):**
+**Mensaje real (servidor de desarrollo: terminal y overlay del navegador, plugin `vite:oxc`):**
+
+```
+[plugin:vite:oxc] Transform failed with 1 error:
+[PARSE_ERROR] Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+    ╭─[ src/components/Footer/Footer.jsx:30:1 ]
+ 30 │ }
+```
+
+**Por qué este mensaje:** Vite 8 ya no usa esbuild ni Babel para transformar JSX, sino el
+compilador **oxc** (plugin `vite:oxc` en desarrollo). Su parser, al encontrar código que no es JSX
+válido, informa del primer *token* inesperado. Por eso el mensaje no es el clásico
+"Adjacent JSX elements must be wrapped in an enclosing tag" de Babel o esbuild.
+
+El mensaje concreto se explica por cómo se aplicó el cambio. Se hizo en dos escrituras: primero se
+borraron las líneas del copyright, `</div>` y `</footer>`, y después se volvieron a insertar con el
+`<p>` fuera del footer. Vite recompiló el archivo entre las dos escrituras, cuando `<footer>` y
+`<div>` aún estaban abiertos. Con las etiquetas abiertas, oxc leyó `)` como texto JSX y al llegar
+a la `}` de la línea 30 se encontró con un carácter que no puede ir suelto dentro de JSX. Por eso
+propone escribirlo como `{'}'}` o `&rbrace;`.
+
+Con el estado final del cambio (dos nodos raíz completos), el mismo compilador oxc da el mensaje
+específico. Se comprobó con `npm run build`:
 
 ```
 [builtin:vite-transform] Adjacent JSX elements must be wrapped in an enclosing tag.
@@ -535,12 +557,11 @@ no es correcto y el aviso indica cómo arreglarlo.
     │ Help: Did you want a JSX fragment `<>...</>`?
 ```
 
-**Por qué:** cada elemento JSX se convierte en una sola expresión (una llamada a `jsx(...)`), y
-un `return` solo puede devolver un valor. Dos elementos seguidos son dos expresiones sin operador
-entre ellas, así que el código **no es sintácticamente válido** y el transformador de Vite falla
-antes de ejecutar nada: es un **error de compilación** y la aplicación no llega a cargarse.
-Solución: envolverlos en un fragmento `<>...</>`, que agrupa sin añadir nodos al DOM, o en un
-elemento contenedor.
+**Por qué es un error de compilación:** cada elemento JSX se convierte en una sola expresión (una
+llamada a `jsx(...)`), y un `return` solo puede devolver un valor. Dos elementos seguidos, o
+etiquetas sin cerrar, no son sintaxis válida. El compilador falla antes de ejecutar nada, Vite
+responde con un 500 al pedir `Footer.jsx` y la aplicación no se actualiza. Solución: envolver los
+elementos en un fragmento `<>...</>`, que agrupa sin añadir nodos al DOM, o en un contenedor.
 
 ### Error 3 – `map` sin `key`
 
